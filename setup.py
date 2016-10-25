@@ -27,7 +27,7 @@ classes = """
 classifiers = [s.strip() for s in classes.split('\n') if s]
 
 setup(name='bloom_analyses',
-      version='1.0',
+      version='0.1',
       license='BSD-3-Clause',
       description='Wetlab Assistant',
       long_description='Weblab Assistant',
