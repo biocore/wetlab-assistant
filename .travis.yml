@@ -1,0 +1,21 @@
+language: python
+sudo: false
+env:
+  - PYTHON_VERSION="2.7"
+  - PYTHON_VERSION="3.5"
+before_install:
+  - wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+  - export PATH=/home/travis/miniconda3/bin:$PATH
+  - conda update --yes conda
+  - conda info -a
+install:
+  - conda create -n test_env python=$PYTHON_VERSION pip nose pep8 flake8
+  - source activate test_env
+  - pip install coveralls
+script:
+  - nosetests --with-doctest --with-coverage
+  - flake8 plate_mapper/*.py plate_mapper/tests/*.py
+after_success:
+  - coveralls
