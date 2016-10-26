@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plate Mapper Manual</title>
+  <style type="text/css">
+  body {
+    margin-left: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  p {
+    line-height: 1.5;
+  }
+  ul {
+    line-height: 1.5;
+  }
+  p.source {
+    margin-left: 20px;
+  }
+  div.table {
+    height: 400px;
+    overflow: auto;
+    margin-left: 20px;
+    margin-right: 20px;
+    border: 1px solid gray;
+  }
+  table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 80%;
+  }
+  table, th, td {
+    border: 1px solid lightgray;
+  }
+  td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  td.col-head {
+    width: 60px;
+    text-align: center;
+    background-color: whitesmoke;
+  }
+  td.row-head {
+    width: 20px;
+    text-align: center;
+    background-color: whitesmoke;
+  }
+
+  </style>
+</head>
+<body>
+  <h1>Plate Mapper</h1>
+  <p>Convert a plate map file to a mapping file.</p>
+
+  <h2>Usage</h2>
+  <p>Execute this command in terminal:</p>
+  <p class="source"><code>python plate_mapper.py -i <i>input</i> -t <i>barseq</i> -o <i>output</i></code></p>
+  <p><b>input</b>, <b>barseq</b> and <b>output</b> are text files in tab-separated values (TSV, also known as tab-delimited) format, in which table fields are separated by the <code>TAB</code> key. Mainstream spreadsheet editors such as Microsoft Excel and Google Sheets can save a spreadsheet as this format.</p>
+
+  <h2>File format standards</h2>
+  <h3><b><u>input</u></b>: plate map file</h3>
+  <div class="table">
+    <table style="width:2000px;">
+      <tr><td class="row-head"></td><td class="col-head">A</td><td class="col-head">B</td><td class="col-head">C</td><td class="col-head">D</td><td class="col-head">E</td><td class="col-head">F</td><td class="col-head">G</td><td class="col-head">H</td><td class="col-head">I</td><td class="col-head">J</td><td class="col-head">K</td><td class="col-head">L</td><td class="col-head">M</td><td class="col-head">N</td><td class="col-head">O</td><td class="col-head">P</td><td class="col-head">Q</td><td class="col-head">R</td><td class="col-head">S</td><td class="col-head">T</td><td class="col-head">U</td><td class="col-head">V</td><td class="col-head">W</td><td class="col-head">X</td><td class="col-head">Y</td><td class="col-head">Z</td><td class="col-head">AA</td><td class="col-head">AB</td><td class="col-head">AC</td><td class="col-head">AD</td></tr>
+      <tr><td class="row-head">1</td><td>Plate#1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>Primer Plate #</td><td>Plating</td><td>ExtractionKit_lot</td><td>Extraction_robot</td><td>TM1000_8_tool</td><td>Primer_date</td><td>MasterMix_lot</td><td>Water_Lot</td><td>Processing_robot</td><td>TM300_8_tool</td><td>TM50_8_tool</td><td>Sample_Plate</td><td>Project_name</td><td>Orig_name</td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">2</td><td>A</td><td>BLANK1.1A</td><td>1.POOP</td><td>1.E1</td><td>1.LIV1</td><td>1.ST1</td><td>1.D6</td><td>1.I2</td><td>1.CE4</td><td>1.CO6</td><td>1.O1</td><td>1.V2</td><td>1.LG3</td><td>1</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/2016</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">3</td><td>B</td><td>BLANK1.1B</td><td>1.BLOOD1</td><td>1.E2</td><td>1.LIV2</td><td>1.ST2</td><td>1.J1</td><td>1.I3</td><td>1.CE5</td><td>1.B1</td><td>1.O2</td><td>1.CT1</td><td>1.LG4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">4</td><td>C</td><td>BLANK1.1C</td><td>1.SK1</td><td>1.M1</td><td>1.LIV3</td><td>1.ST3</td><td>1.J2</td><td>1.I4</td><td>1.CE6</td><td>1.K1</td><td>1.U1</td><td>1.H1</td><td>1.LG5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">5</td><td>D</td><td>BLANK1.1D</td><td>1.SK2</td><td>1.SP1</td><td>1.LIV4</td><td>1.D1</td><td>1.J3</td><td>1.I5</td><td>1.CO1</td><td>1.K2</td><td>1.U2</td><td>1.H2</td><td>1.TR1</td><td></td><td>(note)</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">6</td><td>E</td><td>BLANK1.1E</td><td>1.F1</td><td>1.SP2</td><td>1.LIV5</td><td>1.D2</td><td>1.J4</td><td>1.I6</td><td>1.CO2</td><td>1.K3</td><td>1.U3</td><td>1.H3</td><td>1.TR2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">7</td><td>F</td><td>BLANK1.1F</td><td>1.F2</td><td>1.SP3</td><td>1.P1</td><td>1.D3</td><td>1.J5</td><td>1.CE1</td><td>1.CO3</td><td>1.K4</td><td>1.U4</td><td>1.H4</td><td>1.TR3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">8</td><td>G</td><td>BLANK1.1G</td><td>1.F3</td><td>1.SP4</td><td>1.P2</td><td>1.D4</td><td>1.J6</td><td>1.CE2</td><td>1.CO4</td><td>1.AD1</td><td>1.U5</td><td>1.LG1</td><td>1.TR4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">9</td><td>H</td><td>BLANK1.1H</td><td>1.F4</td><td>1.GB1</td><td>1.P3</td><td>1.D5</td><td>1.I1</td><td>1.CE3</td><td>1.CO5</td><td>1.AD2</td><td>1.V1</td><td>1.LG2</td><td>1.ES1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></tr>
+      <tr><td class="row-head">10</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">11</td><td>Plate#2</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>Primer Plate #</td><td>Plating</td><td>ExtractionKit_lot</td><td>Extraction_robot</td><td>TM1000_8_tool</td><td>Primer_date</td><td>MasterMix_lot</td><td>Water_Lot</td><td>Processing_robot</td><td>TM300_8_tool</td><td>TM50_8_tool</td><td>Sample_Plate</td><td>Project_name</td><td>Orig_name</td></tr>
+      <tr><td class="row-head">12</td><td>A</td><td>1.ES2</td><td>BLANK2.2A</td><td>4.TR4</td><td>4.SK2</td><td>4.F1</td><td>4.F2</td><td>4.F3</td><td>4.F4</td><td>4.E1</td><td>4.E2</td><td>4.M1</td><td>4.SP1</td><td>2</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/2016</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">13</td><td>B</td><td>1.ES3</td><td>BLANK2.2B</td><td>4.H1</td><td>4.GB1</td><td>4.LIV1</td><td>4.LIV2</td><td>4.LIV3</td><td>4.LIV4</td><td>4.LIV5</td><td>4.P1</td><td>4.P2</td><td>4.P3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">14</td><td>C</td><td>1.ES4</td><td>BLANK2.2C</td><td>4.SP4</td><td>4.D1</td><td>4.D2</td><td>4.D3</td><td>4.D4</td><td>4.D5</td><td>4.D6</td><td>4.J1</td><td>4.J2</td><td>4.J3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">15</td><td>D</td><td>1.Th</td><td>BLANK2.2D</td><td>4.SK1</td><td>4.I1</td><td>4.I2</td><td>4.I3</td><td>4.I4</td><td>4.I5</td><td>4.I6</td><td>4.CE1</td><td>4.CE2</td><td>4.CE3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">16</td><td>E</td><td>1.BR4</td><td>BLANK2.2E</td><td>3.AB1</td><td>4.CO1</td><td>4.CO2</td><td>4.CO3</td><td>4.CO4</td><td>4.CO5</td><td>4.CO6</td><td>4.BLOOD1</td><td>4.K1</td><td>4.K2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">17</td><td>F</td><td>1.BR3</td><td>BLANK2.2F</td><td>4.CE6</td><td>4.AD2</td><td>4.O1</td><td>4.O2</td><td>4.U1</td><td>4.U2</td><td>4.U3</td><td>4.U4</td><td>4.U5</td><td>4.CX1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">18</td><td>G</td><td>1.BR2</td><td>BLANK2.2G</td><td>4.J6</td><td>4.H2</td><td>4.H3</td><td>4.H4</td><td>4.LG1</td><td>4.LG2</td><td>4.LG3</td><td>4.LG4</td><td>4.LG5</td><td>4.TR1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">19</td><td>H</td><td>1.BR1</td><td>BLANK2.2H</td><td>4.ST3</td><td>4.ES1</td><td>4.ES2</td><td>4.ES3</td><td>4.ES4</td><td>4.TH</td><td>4.BR1</td><td>4.BR2</td><td>4.BR3</td><td>4.BR4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">20</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">21</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">22</td><td>Plate#3</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>Primer Plate #</td><td>Plating</td><td>ExtractionKit_lot</td><td>Extraction_robot</td><td>TM1000_8_tool</td><td>Primer_date</td><td>MasterMix_lot</td><td>Water_Lot</td><td>Processing_robot</td><td>TM300_8_tool</td><td>TM50_8_tool</td><td>Sample_Plate</td><td>Project_name</td><td>Orig_name</td></tr>
+      <tr><td class="row-head">23</td><td>A</td><td>4.TR2</td><td>4.TR3</td><td>BLANK3.3A</td><td>2.POOP</td><td>2.E1</td><td>2.LIV1</td><td>2.ST1</td><td>2.D6</td><td>2.I2</td><td>2.CE4</td><td>2.CO6</td><td>2.O1</td><td>5</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/2016</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">24</td><td>B</td><td>4.K3</td><td>4.V2</td><td>BLANK3.3B</td><td>2.BLOOD1</td><td>2.E2</td><td>2.LIV2</td><td>2.ST2</td><td>2.J1</td><td>2.I3</td><td>2.CE5</td><td>2.B1</td><td>2.O2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">25</td><td>C</td><td>4.CE4</td><td>4.K4</td><td>BLANK3.3C</td><td>2.SK1</td><td>2.M1</td><td>2.LIV3</td><td>2.ST3</td><td>2.J2</td><td>2.I4</td><td>2.CE6</td><td>2.K1</td><td>2.U1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">26</td><td>D</td><td>4.V1</td><td>4.J5</td><td>BLANK3.3D</td><td>2.SK2</td><td>2.SP1</td><td>2.LIV4</td><td>2.D1</td><td>2.J3</td><td>2.I5</td><td>2.CO1</td><td>2.K2</td><td>2.U2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">27</td><td>E</td><td>4.ST1</td><td>4.ST2</td><td>BLANK3.3E</td><td>2.F1</td><td>2.SP2</td><td>2.LIV5</td><td>2.D2</td><td>2.J4</td><td>2.I6</td><td>2.CO2</td><td>2.K3</td><td>2.U3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">28</td><td>F</td><td>4.CE5</td><td>4.SP3</td><td>BLANK3.3F</td><td>2.F2</td><td>2.SP3</td><td>2.P1</td><td>2.D3</td><td>2.J5</td><td>2.CE1</td><td>2.CO3</td><td>2.K4</td><td>2.U4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">29</td><td>G</td><td>4.SP2</td><td>4.J4</td><td>BLANK3.3G</td><td>2.F3</td><td>2.SP4</td><td>2.P2</td><td>2.D4</td><td>2.J6</td><td>2.CE2</td><td>2.CO4</td><td>2.AB1</td><td>2.U5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">30</td><td>H</td><td>4.POOP</td><td>4.BL1</td><td>BLANK3.3H</td><td>2.F4</td><td>2.GB1</td><td>2.P3</td><td>2.D5</td><td>2.I1</td><td>2.CE3</td><td>2.CO5</td><td>2.AB2</td><td>2.V1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">31</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">32</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">33</td><td>Plate#4</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>Primer Plate #</td><td>Plating</td><td>ExtractionKit_lot</td><td>Extraction_robot</td><td>TM1000_8_tool</td><td>Primer_date</td><td>MasterMix_lot</td><td>Water_Lot</td><td>Processing_robot</td><td>TM300_8_tool</td><td>TM50_8_tool</td><td>Sample_Plate</td><td>Project_name</td><td>Orig_name</td></tr>
+      <tr><td class="row-head">34</td><td>A</td><td>2.LG3</td><td>2.V2</td><td>2.ES2</td><td>BLANK4.4A</td><td>3.POOP</td><td>3.E1</td><td>3.LIV1</td><td>3.ST1</td><td>3.D6</td><td>3.I2</td><td>3.CE4</td><td>3.CO6</td><td>3</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/2016</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">35</td><td>B</td><td>2.CX</td><td>2.LG4</td><td>2.ES3</td><td>BLANK4.4B</td><td>3.BLOOD1</td><td>3.E2</td><td>3.LIV2</td><td>3.ST2</td><td>3.J1</td><td>3.I3</td><td>3.CE5</td><td>3.B1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">36</td><td>C</td><td>2.H1</td><td>2.LG5</td><td>2.ES4</td><td>BLANK4.4C</td><td>3.SK1</td><td>3.M1</td><td>3.LIV3</td><td>3.ST3</td><td>3.J2</td><td>3.I4</td><td>3.CE6</td><td>3.K1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">37</td><td>D</td><td>2.H2</td><td>2.TR1</td><td>2.TH</td><td>BLANK4.4D</td><td>3.SK2</td><td>3.SP1</td><td>3.LIV4</td><td>3.D1</td><td>3.J3</td><td>3.I5</td><td>3.CO1</td><td>3.K2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">38</td><td>E</td><td>2.H3</td><td>2.TR2</td><td>2.BR1</td><td>BLANK4.4E</td><td>3.F1</td><td>3.SP2</td><td>3.LIV5</td><td>3.D2</td><td>3.J4</td><td>3.I6</td><td>3.CO2</td><td>3.K3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">39</td><td>F</td><td>2.H4</td><td>2.TR3</td><td>2.BR2</td><td>BLANK4.4F</td><td>3.F2</td><td>3.SP3</td><td>3.P1</td><td>3.D3</td><td>3.J5</td><td>3.CE1</td><td>3.CO3</td><td>3.K4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">40</td><td>G</td><td>2.LG1</td><td>2.TR4</td><td>2.BR3</td><td>BLANK4.4G</td><td>3.F3</td><td>3.SP4</td><td>3.P2</td><td>3.D4</td><td>3.J6</td><td>3.CE2</td><td>3.CO4</td><td>3.AB1</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">41</td><td>H</td><td>2.LG2</td><td>2.ES1</td><td>2.BR4</td><td>BLANK4.4H</td><td>3.F4</td><td>3.GB1</td><td>3.P3</td><td>3.D5</td><td>3.I1</td><td>3.CE3</td><td>3.CO5</td><td>3.AB2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></tr>
+      <tr><td class="row-head">42</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">43</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+  </div>
+  <ul>
+    <li><code>Rows 10, 20-21, 31-32</code>: Optional empty rows. Zero to multiple empty rows are allowed between plates.</li>
+    <li><code>B1, B11, B22, B33</code>: The indicator of the start of a plate is a "1" in the second cell of a row.</li>
+    <li><code>B1:M1, B11:M11...</code>: Column IDs. They must be incremental integers. The script will count the number of columns until reaching the first cell that is not a number (here <code>N1</code>).</li>
+    <li><code>A2:A9, A12:A19...</code>: Row IDs. Typically letters in alphabetical order. The script will print them AS IS.</li>
+    <li><code>B2:M9, B12:M19...</code>: Plate map region. Each cell contains a sample ID or is left blank. Plates in the same plate map file must be identical in numbers of columns and rows (e.g., 12 x 8).</li>
+    <li><code>N2, N12, N23, N34</code>: Primer plate (aka. barcode sequence template plate) ID. Must be an integer.</li>
+    <ul>
+      <li>Can be in any order, and the script will re-order the plates accordingly from low to high.</li>
+      <li>Can omit some numbers, and the corresponding space will be left blank.</li>
+    </ul>
+    <li><code>O2:AA2</code>: Values of properties of this plate. They will be appended to the mapping file after each row AS IS.</li>
+    <li><code>O1:AA1</code>: Names of the properties. They are only for the user's reference. The script will not parse them.</li>
+    <li><code>N3:AA9</code>: Doodle region. The user can make any comments in this region.</li>
+    <li>Formatting will not affect the result. The user is free to use text color, background color, border color and other approaches to mark any cell in the spreadsheet.</li>
+  </ul>
+
+  <h3><b><u>barseq</u></b>: barcode sequence template file</h3>
+  <div class="table">
+    <table>
+      <tr><td class="row-head"></td><td class="col-head" style="width:120px">A</td><td class="col-head" style="width:240px">B</td><td class="col-head" style="width:75px">C</td><td class="col-head" style="width:75px">D</td></tr>
+      <tr><td class="row-head">1</td><td>BarcodeSequence</td><td>LinkerPrimerSequence</td><td>Primer_Plate</td><td>Well_ID</td></tr>
+      <tr><td class="row-head">2</td><td>AGCCTTCGTCGC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A1</td></tr>
+      <tr><td class="row-head">3</td><td>TCCATACCGGAA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A2</td></tr>
+      <tr><td class="row-head">4</td><td>AGCCCTGCTACA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A3</td></tr>
+      <tr><td class="row-head">5</td><td>CCTAACGGTCCA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A4</td></tr>
+      <tr><td class="row-head">6</td><td>CGCGCCTTAAAC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A5</td></tr>
+      <tr><td class="row-head">7</td><td>TATGGTACCCAG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A6</td></tr>
+      <tr><td class="row-head">8</td><td>TACAATATCTGT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A7</td></tr>
+      <tr><td class="row-head">9</td><td>AATTTAGGTAGG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A8</td></tr>
+      <tr><td class="row-head">10</td><td>GACTCAACCAGT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A9</td></tr>
+      <tr><td class="row-head">11</td><td>GCCTCTACGTCG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A10</td></tr>
+      <tr><td class="row-head">12</td><td>ACTACTGAGGAT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A11</td></tr>
+      <tr><td class="row-head">13</td><td>AATTCACCTCCT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A12</td></tr>
+      <tr><td class="row-head">14</td><td>CGTATAAATGCG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B1</td></tr>
+      <tr><td class="row-head">15</td><td>ATGCTGCAACAC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B2</td></tr>
+      <tr><td class="row-head">16</td><td>ACTCGCTCGCTG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B3</td></tr>
+      <tr><td class="row-head">17</td><td>TTCCTTAGTAGT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B4</td></tr>
+      <tr><td class="row-head">18</td><td>CGTCCGTATGAA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B5</td></tr>
+      <tr><td class="row-head">19</td><td>ACGTGAGGAACG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B6</td></tr>
+      <tr><td class="row-head">20</td><td>GGTTGCCCTGTA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B7</td></tr>
+      <tr><td class="row-head">21</td><td>CATATAGCCCGA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B8</td></tr>
+      <tr><td class="row-head">22</td><td>GCCTATGAGATC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B9</td></tr>
+      <tr><td class="row-head">23</td><td>CAAGTGAAGGGA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B10</td></tr>
+      <tr><td class="row-head">24</td><td>CACGTTTATTCC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B11</td></tr>
+      <tr><td class="row-head">25</td><td>TAATCGGTGCCA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B12</td></tr>
+      <tr><td class="row-head">26</td><td>TGACTAATGGCC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>C1</td></tr>
+      <tr><td class="row-head">27</td><td>CGGGACACCCGA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>C2</td></tr>
+      <tr><td class="row-head">...</td><td colspan="4">...</td></tr>
+      <tr><td class="row-head">671</td><td>GTCACCAATCCG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>8</td><td>H10</td></tr>
+      <tr><td class="row-head">672</td><td>GCCAGGCTTCCT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>8</td><td>H11</td></tr>
+      <tr><td class="row-head">673</td><td>GCACCAATCTGC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>8</td><td>H12</td></tr>
+      <tr><td class="row-head"></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+  </div>
+  <ul>
+    <li>Each row contains barcode sequence, linker primer sequence, primer plate # and well ID, except for the first row, which is for user's reference.</li>
+  </ul>
+
+  <h3><b><u>output</u></b>: mapping file</h3>
+  <p>Spec to be added.</p>
+</body>
+</html>
