@@ -53,7 +53,7 @@ def _main(args):
                     break
 
     # Validate arguments
-    for x in files:
+    for x in (('i', 't', 'o')):
         if not files[x][0]:
             sys.exit('Error: ' + files[x][2] + ' (-' + x + ') is not '
                      'specified.')
