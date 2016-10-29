@@ -7,64 +7,85 @@
 # ----------------------------------------------------------------------------
 
 
-import os
-import sys
+import argparse
 
 
-def _main(args):
+def plate_mapper(input_f, barseq_f, output_f):
     """ Convert a plate map file into a mapping file
 
-    Arguments
+    Parameters
     ---------
-    -i <file_path>
+    input_f : file object
         Input plate map file
-    -t <file_path>
+    barseq_f : file object
         Barcode sequence template file
-    -o <file_path>
+    output_f : file object
         Output mapping file
     """
-
-    # Welcome information
-    print('Plate Mapper: Convert a plate map file into a mapping file.\n'
-          'Last updated: Oct 25, 2016.')
-
-    # Command-line arguments
-    # argument : [ file path, short description, long description ]
-    files = {'i': ['', 'input', 'input plate map file'],
-             't': ['', 'barseq', 'barcode sequence template file'],
-             'o': ['', 'output', 'output mapping file']}
-
-    # Print usage information
-    if len(args) < 3:
-        sys.exit('Usage:\n' +
-                 '  python plate_mapper.py ' +
-                 ' '.join(['-' + x + ' <' + files[x][1] + '>'
-                           for x in files]) + '\n' + 'Notes:\n' +
-                 '\n'.join(['  ' + files[x][1] + ': ' + files[x][2] + '.'
-                            for x in files]) + '\n' +
-                 '  These files should be in tab-delimited (tsv) format.')
-
-    # Read arguments
-    for i in range(1, len(args)-1):
-        if args[i].startswith('-') and not args[i+1].startswith('-'):
-            for x in files:
-                if args[i][1:] == x:
-                    files[x][0] = args[i+1]
-                    break
-
-    # Validate arguments
-    for x in (('i', 't', 'o')):
-        if not files[x][0]:
-            sys.exit('Error: ' + files[x][2] + ' (-' + x + ') is not '
-                     'specified.')
-    for x in (('i', 't')):
-        if not os.path.isfile(files[x][0]):
-            sys.exit('Error: ' + files[x][2] + ' (' + files[x][0] + ') is not '
-                     'a valid file.')
-    if os.path.exists(files['o'][0]):
-        sys.exit('Error: ' + files['o'][2] + ' (' + files['o'][0] + ') '
-                 'already exists.')
+    idx = ''  # primer plate ID
+    cols = 0  # number of columns
+    plates = {}  # plates (primer plate index : well ID : sample ID)
+    properties = {}  # properties
+    # Read input plate map file
+    print('Reading input plate map file...')
+    for line in input_f:
+        line = line.rstrip('\r\n')
+        if not line:  # skip empty lines
+            continue
+        if not ''.join(line.split()):
+            continue
+        l = line.split('\t')
+        if l[1] == '1':  # plate starts
+            if not cols:  # count number of columns
+                for x in l[1:]:
+                    if not x.isdigit():  # stop at first non-digit cell
+                        break
+                    cols += 1
+            continue
+        if l[0] == 'A':  # first row
+            idx = l[cols+1]
+            plates[idx] = {}
+            properties[idx] = l[cols+2:]
+        for i in range(1, cols+1):
+            if i < len(l) and l[i]:  # only read non-empty cells
+                plates[idx][l[0] + str(i)] = l[i]
+    input_f.close()
+    print('  Done.')
+    # Read barcode sequence template file
+    barseqs = []
+    print('Reading barcode sequence template file...')
+    next(barseq_f)  # skip header line
+    for line in barseq_f:
+        line = line.rstrip('\r\n')
+        if line:
+            # [ barcode sequence, linker primer sequence, primer plate #,
+            # well ID ]
+            barseqs.append(line.split('\t'))
+    barseq_f.close()
+    print('  Done.')
+    # Write output sequencing run file
+    print('Writing output mapping file...')
+    for x in barseqs:
+        if x[2] in plates and x[3] in plates[x[2]]:
+            output_f.write(plates[x[2]][x[3]] + '\t' + '\t'.join(x) +
+                           '\t' + '\t'.join(properties[x[2]]) + '\n')
+        else:
+            output_f.write('\t' + '\t'.join(x) + '\n')
+    output_f.close()
+    print('  Done. Task completed.')
 
 
 if __name__ == "__main__":
-    _main(sys.argv)
+    # Welcome information
+    print('Plate Mapper: Convert a plate map file into a mapping file.\n'
+          'Last updated: Oct 28, 2016.')
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input', type=argparse.FileType('r'),
+                        help='input plate map file', required=True)
+    parser.add_argument('-t', '--barseq', type=argparse.FileType('r'),
+                        help='barcode sequence template file', required=True)
+    parser.add_argument('-o', '--output', type=argparse.FileType('w'),
+                        help='output mapping file', required=True)
+    args = parser.parse_args()
+    plate_mapper(args.input, args.barseq, args.output)
