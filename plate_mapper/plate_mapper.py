@@ -29,14 +29,11 @@ def plate_mapper(input_f, barseq_f, output_f):
     # Read input plate map file
     print('Reading input plate map file...')
     for line in input_f:
-        line = line.rstrip('\r\n')
-        if not line:  # skip empty lines
+        if not line.split():  # skip empty lines
             continue
-        if not ''.join(line.split()):
-            continue
-        l = line.split('\t')
+        l = line.rstrip().split('\t')
         if l[1] == '1':  # plate starts
-            if not cols:  # count number of columns
+            if cols == 0:  # count number of columns
                 for x in l[1:]:
                     if not x.isdigit():  # stop at first non-digit cell
                         break
@@ -56,19 +53,18 @@ def plate_mapper(input_f, barseq_f, output_f):
     print('Reading barcode sequence template file...')
     next(barseq_f)  # skip header line
     for line in barseq_f:
-        line = line.rstrip('\r\n')
+        line = line.rstrip()
         if line:
-            # [ barcode sequence, linker primer sequence, primer plate #,
-            # well ID ]
             barseqs.append(line.split('\t'))
     barseq_f.close()
     print('  Done.')
     # Write output sequencing run file
     print('Writing output mapping file...')
     for x in barseqs:
+        # [ barcode sequence, linker primer sequence, primer plate #, well ID ]
         if x[2] in plates and x[3] in plates[x[2]]:
-            output_f.write(plates[x[2]][x[3]] + '\t' + '\t'.join(x) +
-                           '\t' + '\t'.join(properties[x[2]]) + '\n')
+            output_f.write('%s\t%s\t%s\n' % (plates[x[2]][x[3]], '\t'.join(x),
+                           '\t'.join(properties[x[2]])))
         else:
             output_f.write('\t' + '\t'.join(x) + '\n')
     output_f.close()
