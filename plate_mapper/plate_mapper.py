@@ -26,26 +26,36 @@ def plate_mapper(input_f, barseq_f, output_f):
     cols = 0  # number of columns
     plates = {}  # plates (primer plate index : well ID : sample ID)
     properties = {}  # properties
+    crow = ''  # current row header
     # Read input plate map file
     print('Reading input plate map file...')
     for line in input_f:
         if not line.split():  # skip empty lines
             continue
         l = line.rstrip().split('\t')
-        if l[1] == '1':  # plate starts
+        if l[1] == '1':  # plate head
+            ccols = 0  # number of columns of current plate
+            for i in range(1, len(l)):
+                if not l[i].isdigit():
+                    break  # stop at first non-digit cell
+                elif i > 1 and int(l[i]) != int(l[i-1]) + 1:
+                    raise ValueError('Error: column headers are not '
+                                     'incremental integers.')
+                ccols += 1
             if cols == 0:  # count number of columns
-                for x in l[1:]:
-                    if not x.isdigit():  # stop at first non-digit cell
-                        break
-                    cols += 1
-            continue
-        if l[0] == 'A':  # first row
-            idx = l[cols+1]
-            plates[idx] = {}
-            properties[idx] = l[cols+2:]
-        for i in range(1, cols+1):
-            if i < len(l) and l[i]:  # only read non-empty cells
-                plates[idx][l[0] + str(i)] = l[i]
+                cols = ccols
+        else:  # plate body
+            if l[0] == 'A':  # first row
+                idx = l[cols+1]
+                plates[idx] = {}
+                properties[idx] = l[cols+2:]
+            elif ord(l[0]) != ord(crow) + 1:
+                raise ValueError('Error: row headers are not letters in '
+                                 'alphabetical order.')
+            crow = l[0]
+            for i in range(1, cols+1):
+                if i < len(l) and l[i]:  # only read non-empty cells
+                    plates[idx][l[0] + str(i)] = l[i]
     input_f.close()
     print('  Done.')
     # Read barcode sequence template file
@@ -74,7 +84,7 @@ def plate_mapper(input_f, barseq_f, output_f):
 if __name__ == "__main__":
     # Welcome information
     print('Plate Mapper: Convert a plate map file into a mapping file.\n'
-          'Last updated: Oct 28, 2016.')
+          'Last updated: Oct 31, 2016.')
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=argparse.FileType('r'),

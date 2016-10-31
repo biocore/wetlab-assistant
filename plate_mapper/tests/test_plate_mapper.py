@@ -29,10 +29,18 @@ class PlateMapperTests(TestCase):
         with open(self.plate_map_fp, 'w') as tmp:
             tmp.write(plate_map)
         self.mapping_fp = join(self.wkdir, "mapping.tsv")
+        self.plate_map_cherr_fp = join(self.wkdir, "plate_map_cherr.tsv")
+        with open(self.plate_map_cherr_fp, 'w') as tmp:
+            tmp.write(plate_map_col_header_err)
+        self.plate_map_rherr_fp = join(self.wkdir, "plate_map_rherr.tsv")
+        with open(self.plate_map_rherr_fp, 'w') as tmp:
+            tmp.write(plate_map_row_header_err)
         # list of files to remove
         self.tmpfiles = [self.barseq_temp_fp,
                          self.plate_map_fp,
-                         self.mapping_fp]
+                         self.mapping_fp,
+                         self.plate_map_cherr_fp,
+                         self.plate_map_rherr_fp]
 
     def tearDown(self):
         for file in self.tmpfiles:
@@ -49,6 +57,18 @@ class PlateMapperTests(TestCase):
         with open(self.mapping_fp, 'r') as input_f:
             obs = input_f.read()
         self.assertEqual(obs, exp_mapping)
+        # test column header Error
+        input_f = open(self.plate_map_cherr_fp, 'r')
+        with self.assertRaises(ValueError) as context:
+            plate_mapper(input_f, None, None)
+        err = 'Error: column headers are not incremental integers.'
+        self.assertEqual(str(context.exception), err)
+        # test row header Error
+        input_f = open(self.plate_map_rherr_fp, 'r')
+        with self.assertRaises(ValueError) as context:
+            plate_mapper(input_f, None, None)
+        err = 'Error: row headers are not letters in alphabetical order.'
+        self.assertEqual(str(context.exception), err)
 
 
 # A simplified plate map file containing two plates, each having 4 columns x
@@ -166,6 +186,22 @@ sp019B	CTGATGTACACG	ATCG	3	C3	QZ	10/26/16
 \tACTGTTTACTGT	ATCG	4	C2
 \tGTCACGGACATT	ATCG	4	C3
 \tGAATATACCTGG	ATCG	4	C4
+"""
+
+# Column headers are not incremental integers
+plate_map_col_header_err = """
+Plate#3	1	2	3	5	#	Who  When
+A	sp001	sp004	sp006	blank4A	1	QZ	8/15/16
+B	sp002	sp005	sp007	missing4B		a sample is missing
+C	sp003	blank2C	blank3C	sp220
+"""
+
+# Row headers are not in alphabetical order
+plate_map_row_header_err = """
+Plate#4	1	2	3	4	#	Who  When
+A	sp001	sp004	sp006	blank4A	1	QZ	8/15/16
+B	sp002	sp005	sp007	missing4B		a sample is missing
+D	sp003	blank2C	blank3C	sp220
 """
 
 if __name__ == '__main__':
