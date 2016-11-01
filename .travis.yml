@@ -8,6 +8,7 @@ before_install:
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
   - export PATH=/home/travis/miniconda3/bin:$PATH
+  - conda config --set always_yes yes --set changeps1 no
   - conda update --yes conda
   - conda info -a
 install:
