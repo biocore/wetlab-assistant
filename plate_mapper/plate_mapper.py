@@ -22,40 +22,39 @@ def plate_mapper(input_f, barseq_f, output_f):
     output_f : file object
         Output mapping file
     """
-    idx = ''  # primer plate ID
-    cols = 0  # number of columns
-    plates = {}  # plates (primer plate index : well ID : sample ID)
+    cols = 0  # number of columns of current plate
+    letter = ''  # current row header (a letter)
+    primer_plate_id = ''  # primer plate ID
+    plates = {}  # plates (primer plate ID : well ID : sample ID)
     properties = {}  # properties
-    crow = ''  # current row header
     # Read input plate map file
     print('Reading input plate map file...')
     for line in input_f:
-        if not line.split():  # skip empty lines
-            continue
         l = line.rstrip().split('\t')
+        if l == ['']:  # skip empty lines
+            continue
         if l[1] == '1':  # plate head
-            ccols = 0  # number of columns of current plate
-            for i in range(1, len(l)):
-                if not l[i].isdigit():
-                    break  # stop at first non-digit cell
-                elif i > 1 and int(l[i]) != int(l[i-1]) + 1:
+            for cols, v in enumerate(l[1:]):
+                if not v.isdigit():  # stop at first non-digit cell
+                    break
+                elif int(v) != cols+1:
                     raise ValueError('Error: column headers are not '
                                      'incremental integers.')
-                ccols += 1
-            if cols == 0:  # count number of columns
-                cols = ccols
+            letter = 'A'
         else:  # plate body
-            if l[0] == 'A':  # first row
-                idx = l[cols+1]
-                plates[idx] = {}
-                properties[idx] = l[cols+2:]
-            elif ord(l[0]) != ord(crow) + 1:
+            if letter != l[0]:
                 raise ValueError('Error: row headers are not letters in '
                                  'alphabetical order.')
-            crow = l[0]
-            for i in range(1, cols+1):
-                if i < len(l) and l[i]:  # only read non-empty cells
-                    plates[idx][l[0] + str(i)] = l[i]
+            if letter == 'A':  # first row
+                primer_plate_id = l[cols+1]
+                plates[primer_plate_id] = {}
+                # reading properties, which are in the columns after the plate
+                properties[primer_plate_id] = l[cols+2:]
+            letter = chr(ord(letter) + 1)
+            # only read non-empty cells in column number range
+            plates[primer_plate_id].update({'%s%d' % (l[0], i): l[i]
+                                            for i in range(1, cols+1)
+                                            if i < len(l) and l[i]})
     input_f.close()
     print('  Done.')
     # Read barcode sequence template file
