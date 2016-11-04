@@ -33,7 +33,7 @@ def plate_mapper(input_f, barseq_f, output_f):
         l = line.rstrip().split('\t')
         if l == ['']:  # skip empty lines
             continue
-        if l[1] == '1':  # plate head
+        if len(l) > 1 and l[1] == '1':  # plate head
             for cols, v in enumerate(l[1:]):
                 if not v.isdigit():  # stop at first non-digit cell
                     break
