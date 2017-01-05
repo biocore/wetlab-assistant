@@ -9,6 +9,7 @@
 
 import sys
 import argparse
+from collections import Counter
 
 
 def _print_list(l):
@@ -35,6 +36,53 @@ def _print_list(l):
         return(', '.join(l[:3]) + '... (' + str(n) + ' in total)')
     else:
         return(', '.join(l))
+
+
+def _validate_samples(samples, names_f):
+    """ Validate sample names in the mapping file
+
+    Parameters
+    ----------
+    samples : list of str
+        list of sample names in the mapping file
+    names_f : file object
+        Reference sample name list file
+
+    Return
+    ------
+    str
+        Warning message
+    """
+    samples = Counter(samples)
+    names = set()
+    for line in names_f:
+        l = line.rstrip().split('\t')
+        if l == [''] or l[0] == '':  # skip empty names
+            continue
+        names.add(l[0])  # keep first field as name
+    names_f.close()
+    warning = ''
+    if names:
+        sample_set = set(samples)
+        # samples in plate map but not in name list
+        novel = sample_set - names
+        # samples in name list but not in plate map
+        missing = names - sample_set
+        # samples that occur more than one times in plate map
+        repeated = set()
+        for name in names:
+            if name in samples and samples[name] > 1:
+                repeated.add(name)
+        if novel:
+            warning += ('  Novel samples: %s.\n'
+                        % _print_list(sorted(novel)))
+        if missing:
+            warning += ('  Missing samples: %s.\n'
+                        % _print_list(sorted(missing)))
+        if repeated:
+            warning += ('  Repeated samples: %s.\n'
+                        % _print_list(sorted(repeated)))
+    return warning
 
 
 def plate_mapper(input_f, barseq_f, output_f, names_f=None):
@@ -97,18 +145,15 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
     barseq_f.close()
     print('  Done.')
     # Write output sequencing run file
-    samples = {}
+    samples = []
     print('Writing output mapping file...')
     for x in barseqs:
         # [ barcode sequence, linker primer sequence, primer plate #, well ID ]
         if x[2] in plates and x[3] in plates[x[2]]:
             sample = plates[x[2]][x[3]]
-            output_f.write('%s\t%s\t%s\n' % (plates[x[2]][x[3]], '\t'.join(x),
+            output_f.write('%s\t%s\t%s\n' % (sample, '\t'.join(x),
                            '\t'.join(properties[x[2]])))
-            if sample in samples:
-                samples[sample] += 1
-            else:
-                samples[sample] = 1
+            samples.append(sample)
         else:
             output_f.write('\t' + '\t'.join(x) + '\n')
     output_f.close()
@@ -116,34 +161,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
     # Validate sample names
     if names_f:
         print('Validating sample names...')
-        names = set()
-        for line in names_f:
-            l = line.rstrip().split('\t')
-            if l == [''] or l[0] == '':  # skip empty names
-                continue
-            names.add(l[0])  # keep first field as name
-        names_f.close()
-        warning = ''
-        if names:
-            sample_set = set(samples)
-            # samples in plate map but not in name list
-            novel = sample_set - names
-            # samples in name list but not in plate map
-            missing = names - sample_set
-            # samples that occur more than one times in plate map
-            repeated = set()
-            for name in names:
-                if name in samples and samples[name] > 1:
-                    repeated.add(name)
-            if novel:
-                warning += ('  Novel samples: %s.\n'
-                            % _print_list(sorted(novel)))
-            if missing:
-                warning += ('  Missing samples: %s.\n'
-                            % _print_list(sorted(missing)))
-            if repeated:
-                warning += ('  Repeated samples: %s.\n'
-                            % _print_list(sorted(repeated)))
+        warning = _validate_samples(samples, names_f)
         print('  Done.')
         if warning:
             sys.exit('Warning:\n%s' % warning)
