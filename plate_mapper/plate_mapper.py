@@ -30,8 +30,9 @@ def _print_list(l):
     If the list has > 10 items, only the first three items will be printed,
     followed by "... (no._of_items in total)"
     """
-    if len(l) > 10:
-        return(', '.join(l[:3]) + '... (' + str(len(l)) + ' in total)')
+    n = len(l)
+    if n > 10:
+        return(', '.join(l[:3]) + '... (' + str(n) + ' in total)')
     else:
         return(', '.join(l))
 
@@ -111,8 +112,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
         else:
             output_f.write('\t' + '\t'.join(x) + '\n')
     output_f.close()
-    print('  Done.')
-    print('Task completed.')
+    print('  Done.\nTask completed.')
     # Validate sample names
     if names_f:
         print('Validating sample names...')
@@ -125,10 +125,11 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
         names_f.close()
         warning = ''
         if names:
+            sample_set = set(samples)
             # samples in plate map but not in name list
-            novel = set(samples) - names
+            novel = sample_set - names
             # samples in name list but not in plate map
-            missing = names - set(samples)
+            missing = names - sample_set
             # samples that occur more than one times in plate map
             repeated = set()
             for name in names:
