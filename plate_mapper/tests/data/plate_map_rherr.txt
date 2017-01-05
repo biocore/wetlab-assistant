@@ -1,0 +1,4 @@
+Plate#4	1	2	3	4	#	Who  When
+A	sp001	sp004	sp006	blank4A	1	QZ	8/15/16
+B	sp002	sp005	sp007	missing4B		a sample is missing
+D	sp003	blank2C	blank3C	sp220
