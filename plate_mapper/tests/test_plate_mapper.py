@@ -39,28 +39,35 @@ class PlateMapperTests(TestCase):
         output_f = open(obs_output_fp, 'w')
         # expected output mapping file
         exp_output_fp = join(datadir, 'exp_mapping.txt')
-        # sample name list
-        names_f = open(join(datadir, 'sample_list.txt'), 'r')
-        with self.assertRaises(SystemExit) as context:
-            plate_mapper(input_f, barseq_f, output_f, names_f)
+        plate_mapper(input_f, barseq_f, output_f)
         # check output mapping file
         with open(obs_output_fp, 'r') as f:
             obs = f.read()
         with open(exp_output_fp, 'r') as f:
             exp = f.read()
         self.assertEqual(obs, exp)
+
+        # test a successful conversion with sample name validation warnings
+        input_f = open(join(datadir, 'plate_map.txt'), 'r')
+        barseq_f = open(join(datadir, 'barseq_temp.txt'), 'r')
+        output_f = open(obs_output_fp, 'w')
+        # sample name list
+        names_f = open(join(datadir, 'sample_list.txt'), 'r')
         # check screen warning message
-        exp = ('Warning:\n'
+        msg = ('Warning:\n'
                '  Novel samples: missing4B, sp220.\n'
                '  Missing samples: sp014, sp017.\n'
                '  Repeated samples: blank4A.\n')
-        self.assertEqual(str(context.exception), exp)
+        with self.assertWarns(UserWarning, msg=msg):
+            plate_mapper(input_f, barseq_f, output_f, names_f)
+
         # test error when column headers are not incremental integers
         input_f = open(join(datadir, 'plate_map_cherr.txt'), 'r')
         with self.assertRaises(ValueError) as context:
             plate_mapper(input_f, None, None)
         err = 'Error: column headers are not incremental integers.'
         self.assertEqual(str(context.exception), err)
+
         # test error when row headers are not in alphabetical order
         input_f = open(join(datadir, 'plate_map_rherr.txt'), 'r')
         with self.assertRaises(ValueError) as context:
