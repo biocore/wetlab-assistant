@@ -10,6 +10,7 @@ from unittest import TestCase, main
 from tempfile import mkdtemp
 from shutil import rmtree
 from os.path import join, dirname, realpath
+from warnings import catch_warnings, simplefilter
 from plate_mapper.plate_mapper import (plate_mapper,
                                        _print_list)
 
@@ -58,8 +59,10 @@ class PlateMapperTests(TestCase):
                '  Novel samples: missing4B, sp220.\n'
                '  Missing samples: sp014, sp017.\n'
                '  Repeated samples: blank4A.\n')
-        with self.assertWarns(UserWarning, msg=msg):
+        with catch_warnings(record=True) as w:
+            simplefilter('always')
             plate_mapper(input_f, barseq_f, output_f, names_f)
+            assert msg in str(w[-1].message)
 
         # test error when column headers are not incremental integers
         input_f = open(join(datadir, 'plate_map_cherr.txt'), 'r')
