@@ -118,9 +118,8 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
         names = set()
         for line in names_f:
             l = line.rstrip().split('\t')
-            if l == [''] or l[0] == '':  # skip empty names
-                continue
-            names.add(l[0])  # keep first field as name
+            if l[0]:  # skip empty names
+                names.add(l[0])  # keep first field as name
         names_f.close()
         warning = ''
         if names:
