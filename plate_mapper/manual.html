@@ -79,7 +79,7 @@
 
   <h2>Usage</h2>
   <p>Execute this command in terminal:</p>
-  <p class="source"><code>python plate_mapper.py -i <i>input</i> -t <i>barseq</i> -o <i>output</i></code></p>
+  <p class="source"><code>python plate_mapper.py -i <i>input</i> -t <i>barseq</i> -o <i>output</i> [-n <i>names</i>] [-s <i>special</i>]</code></p>
   <p><b>input</b>, <b>barseq</b> and <b>output</b> are text files in tab-separated values (TSV, also known as tab-delimited) format, in which table fields are separated by the <code>TAB</code> key. Mainstream spreadsheet editors such as Microsoft Excel and Google Sheets can save a spreadsheet as this format.</p>
 
   <h2>File format standards</h2>
@@ -196,7 +196,7 @@
       <tr><td class="row-head"></td><td class="col-head" style="width:75px">A</td><td class="col-head" style="width:120px">B</td><td class="col-head" style="width:240px">C</td><td class="col-head" style="width:75px">D</td><td class="col-head" style="width:75px">E</td><td class="col-head" style="width:75px">F</td><td class="col-head" style="width:75px">G</td><td class="col-head" style="width:75px">H</td><td class="col-head" style="width:75px">I</td><td class="col-head" style="width:75px">J</td><td class="col-head" style="width:75px">K</td><td class="col-head">L</td><td class="col-head">M</td><td class="col-head">N</td><td class="col-head">O</td><td class="col-head">P</td><td class="col-head">Q</td><td class="col-head">R</td></tr>
       <tr><td class="row-head">1</td><td>BLANK1.1A</td><td>AGCCTTCGTCGC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A1</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">2</td><td>1.POOP</td><td>TCCATACCGGAA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A2</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
-      <tr><td class="row-head">3</td><td>1.00E+01</td><td>AGCCCTGCTACA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A3</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">3</td><td>1.E1</td><td>AGCCCTGCTACA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A3</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">4</td><td>1.LIV1</td><td>CCTAACGGTCCA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A4</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">5</td><td>1.ST1</td><td>CGCGCCTTAAAC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A5</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">6</td><td>1.D6</td><td>TATGGTACCCAG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A6</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
@@ -208,7 +208,7 @@
       <tr><td class="row-head">12</td><td></td><td>AATTCACCTCCT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>A12</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       <tr><td class="row-head">13</td><td>BLANK1.1B</td><td>CGTATAAATGCG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B1</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">14</td><td>1.BLOOD1</td><td>ATGCTGCAACAC</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B2</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
-      <tr><td class="row-head">15</td><td>1.00E+02</td><td>ACTCGCTCGCTG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B3</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">15</td><td>1.E2</td><td>ACTCGCTCGCTG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B3</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">16</td><td>1.LIV2</td><td>TTCCTTAGTAGT</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B4</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">17</td><td>1.ST2</td><td>CGTCCGTATGAA</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B5</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
       <tr><td class="row-head">18</td><td>1.J1</td><td>ACGTGAGGAACG</td><td>GTGTGCCAGCMGCCGCGGTAA</td><td>1</td><td>B6</td><td>QZ</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>8/15/16</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_142</td><td>Test_Study</td><td>33657</td></tr>
@@ -234,6 +234,46 @@
   </div>
   <ul>
     <li>The content of this file can be directly copied and pasted into the final mapping file template (Excel spreadsheet format).</li>
+  </ul>
+
+  <h3>(optional) <b><u>names</u></b>: sample name list</h3>
+  <div class="table" style="height:240px">
+    <table>
+      <tr><td class="row-head"></td><td class="col-head">A</td><td class="col-head">B</td><td class="col-head">C</td><td class="col-head">D</td><td class="col-head">E</td><td class="col-head">F</td><td class="col-head">G</td></tr>
+      <tr><td class="row-head">1</td><td>1.POOP</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">2</td><td>1.E1</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">3</td><td>1.ST1</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">4</td><td>1.D6</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">5</td><td>1.I2</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">6</td><td>1.CE4</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">7</td><td>1.CO6</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">8</td><td>1.V2</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">9</td><td>1.CE4</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">...</td><td colspan="7">...</td></tr>
+      <tr><td class="row-head">87</td><td>4.BR1</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">88</td><td>4.BR2</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><td class="row-head">89</td><td>4.BR3</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+  </div>
+  <ul>
+    <li>This function is to validate whether the samples in the mapping file are identical to this given sample name list. Specifically, this function will report sample names that 1) are present in the mapping file but not in the name list, 2) are present in the name list but not in the mapping file, 3) have duplicates in the mapping file.</li>
+    <li>The sample name list file should contain one sample name per line. Additional information after the first tab will be trimmed off (therefore the user may use a table instead of a list).</li>
+  </ul>
+
+  <h3>(optional) <b><u>special</u></b>: special sample definition</h3>
+  <div class="table" style="height:120px">
+    <table style="width:1200px;">
+      <tr><td class="row-head"></td><td class="col-head">A</td><td class="col-head">B</td><td class="col-head" style="width:120px">C</td><td class="col-head">D</td><td class="col-head">E</td><td class="col-head">F</td><td class="col-head">G</td><td class="col-head">H</td><td class="col-head">I</td><td class="col-head">J</td><td class="col-head">K</td><td class="col-head">L</td><td class="col-head">M</td><td class="col-head">N</td><td class="col-head">O</td></tr>
+      <tr><td class="row-head">1</td><td>#Code</td><td>Name</td><td>Note</td><td>ExtractionKit_lot</td><td>Extraction_robot</td><td>TM1000_8_tool</td><td>Primer_date</td><td>MasterMix_lot</td><td>Water_Lot</td><td>Processing_robot</td><td>TM300_8_tool</td><td>TM50_8_tool</td><td>Sample_Plate</td><td>Project_name</td><td>Orig_name</td></tr>
+      <tr><td class="row-head">2</td><td style="text-align:center">_</td><td>BLANK</td><td>Blank sample</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>1/5/2017</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_220</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">3</td><td style="text-align:center">+</td><td>POSCTL</td><td>Positive control</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>1/5/2017</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_220</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">4</td><td style="text-align:center">-</td><td>NEGCTL</td><td>Negative control</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>1/5/2017</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_220</td><td>Test_Study</td><td>33657</td></tr>
+      <tr><td class="row-head">5</td><td style="text-align:center"></td><td>EMPTY</td><td>Empty well</td><td>PM16F14</td><td>HOWE_KF1</td><td>108379Z</td><td>1/5/2017</td><td>373139</td><td>RNBF2734</td><td>RIKE</td><td>311318B</td><td>311426B</td><td>Test_Plate_220</td><td>Test_Study</td><td>33657</td></tr>
+    </table>
+  </div>
+  <ul>
+    <li>This function is to facilitate entering special types of samples. For example, when the user wants to enter a blank sample in the plate map, they simply need to type an underline (<b>_</b>). This character will be converted into "<b>BLANKx.yz</b>" in the final mapping file, in which <b>x</b>, <b>y</b> and <b>z</b> are the primer plate number, row number and column number. The metadata following the sample will be replaced with what are defined here.</li>
+    <li>Note that the sample name validation function will ignore these special samples.</li>
   </ul>
 
   <hr>
