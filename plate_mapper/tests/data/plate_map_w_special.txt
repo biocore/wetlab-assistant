@@ -1,0 +1,4 @@
+Plate#1	1	2	3	4	#	Who  When
+A	sp001	sp004	sp006	_	1	QZ	8/15/16
+B	sp002	sp005	sp007	
+C	sp003	+	-	_

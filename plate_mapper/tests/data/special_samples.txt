@@ -1,0 +1,5 @@
+Code	Name	Note	Who	When
++	PosCtl	positive control	XY	1/10/17
+-	NegCtl	negative control	XY	1/10/17
+_	Blank	blank sample	XY	1/10/17
+	Empty	empty well	NA	NA
