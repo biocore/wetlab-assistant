@@ -27,6 +27,7 @@ class PlateMapperTests(TestCase):
         rmtree(self.wkdir)
 
     def test_plate_mapper(self):
+
         # test a successful conversion
         # subdirectory "data", in which test data files are located
         datadir = join(dirname(realpath(__file__)), 'data')
@@ -48,6 +49,66 @@ class PlateMapperTests(TestCase):
             exp = f.read()
         self.assertEqual(obs, exp)
 
+        # test error when column headers are not incremental integers
+        input_f = open(join(datadir, 'plate_map_cherr.txt'), 'r')
+        with self.assertRaises(ValueError) as context:
+            plate_mapper(input_f, None, None)
+        err = 'Error: column headers are not incremental integers.'
+        self.assertEqual(str(context.exception), err)
+
+        # test error when row headers are not in alphabetical order
+        input_f = open(join(datadir, 'plate_map_rherr.txt'), 'r')
+        with self.assertRaises(ValueError) as context:
+            plate_mapper(input_f, None, None)
+        err = 'Error: row headers are not letters in alphabetical order.'
+        self.assertEqual(str(context.exception), err)
+
+        # test a successful conversion with special sample definitions
+        # a plate map file containing normal and special samples
+        input_f = open(join(datadir, 'plate_map_w_special.txt'), 'r')
+        barseq_f = open(join(datadir, 'barseq_temp.txt'), 'r')
+        obs_output_fp = join(self.wkdir, 'obs_mapping.txt')
+        output_f = open(obs_output_fp, 'w')
+        # special sample definition file
+        special_f = open(join(datadir, 'special_samples.txt'), 'r')
+        # expected output mapping file with special samples correctly treated
+        exp_output_fp = join(datadir, 'exp_mapping_w_special.txt')
+        plate_mapper(input_f, barseq_f, output_f, special_f=special_f)
+        with open(obs_output_fp, 'r') as f:
+            obs = f.read()
+        with open(exp_output_fp, 'r') as f:
+            exp = f.read()
+        self.assertEqual(obs, exp)
+
+        # test error when special sample definitions are invalid
+        input_fp = join(datadir, 'plate_map_w_special.txt')
+        barseq_fp = join(datadir, 'barseq_temp.txt')
+        special_fp = join(self.wkdir, 'special_samples_w_error.txt')
+        # no property following sample
+        with open(special_fp, 'w') as f:
+            f.write('#\n+\tPOS\tpositive control\n')
+        with self.assertRaises(ValueError) as context:
+            plate_mapper(open(input_fp, 'r'), open(barseq_fp, 'r'), None,
+                         special_f=open(special_fp, 'r'))
+        err = 'Error: invalid definition: +\tPOS\tpositive control.'
+        self.assertEqual(str(context.exception), err)
+        # code has duplicates
+        with open(special_fp, 'w') as f:
+            f.write('#\n+\tPOS\tpos1\tproperty1\n+\tPSC\tpos2\tproperty2\n')
+        with self.assertRaises(ValueError) as context:
+            plate_mapper(open(input_fp, 'r'), open(barseq_fp, 'r'), None,
+                         special_f=open(special_fp, 'r'))
+        err = 'Error: Code \'+\' has duplicates.'
+        self.assertEqual(str(context.exception), err)
+        # missing name
+        with open(special_fp, 'w') as f:
+            f.write('#\n+\t\tpositive control\tproperty1\n')
+        with self.assertRaises(ValueError) as context:
+            plate_mapper(open(input_fp, 'r'), open(barseq_fp, 'r'), None,
+                         special_f=open(special_fp, 'r'))
+        err = 'Error: Code \'+\' has no name.'
+        self.assertEqual(str(context.exception), err)
+
         # test a successful conversion with sample name validation warnings
         input_f = open(join(datadir, 'plate_map.txt'), 'r')
         barseq_f = open(join(datadir, 'barseq_temp.txt'), 'r')
@@ -63,20 +124,6 @@ class PlateMapperTests(TestCase):
             simplefilter('always')
             plate_mapper(input_f, barseq_f, output_f, names_f)
             assert msg in str(w[-1].message)
-
-        # test error when column headers are not incremental integers
-        input_f = open(join(datadir, 'plate_map_cherr.txt'), 'r')
-        with self.assertRaises(ValueError) as context:
-            plate_mapper(input_f, None, None)
-        err = 'Error: column headers are not incremental integers.'
-        self.assertEqual(str(context.exception), err)
-
-        # test error when row headers are not in alphabetical order
-        input_f = open(join(datadir, 'plate_map_rherr.txt'), 'r')
-        with self.assertRaises(ValueError) as context:
-            plate_mapper(input_f, None, None)
-        err = 'Error: row headers are not letters in alphabetical order.'
-        self.assertEqual(str(context.exception), err)
 
     def test__print_list(self):
         l = ['1', '2', '3', '4', '5']
