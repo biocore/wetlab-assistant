@@ -123,25 +123,25 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
     # Write output sequencing run file
     samples = []
     print('Writing output mapping file...')
-    for x in barseqs:
+    for barcode, primer, plate, well in barseqs:
         # [ barcode sequence, linker primer sequence, primer plate #, well ID ]
         sample, property = '', []
-        if x[2] in plates:
-            if x[3] in plates[x[2]]:
-                sample, property = plates[x[2]][x[3]], properties[x[2]]
+        if plate in plates:
+            if well in plates[plate]:
+                sample, property = plates[plate][well], properties[plate]
                 if specs and sample in specs:
                     # replace with special sample definition
                     property = specs[sample]['property']
-                    sample = '%s%s.%s' % (specs[sample]['name'], x[2], x[3])
+                    sample = '%s%s.%s' % (specs[sample]['name'], plate, well)
                 else:
                     # normal sample name
                     samples.append(sample)
             elif '' in specs:
                 # empty well (if defined as a special sample)
                 property = specs['']['property']
-                sample = '%s%s.%s' % (specs['']['name'], x[2], x[3])
-        output_f.write('%s\t%s\t%s\n' % (sample, '\t'.join(x),
-                       '\t'.join(property)))
+                sample = '%s%s.%s' % (specs['']['name'], plate, well)
+        output_f.write('%s\t%s\n' % ('\t'.join((sample, barcode, primer, plate,
+                                     well)), '\t'.join(property)))
     output_f.close()
     print('  Done.')
 
