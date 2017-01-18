@@ -38,7 +38,7 @@ def _print_list(l):
         return(', '.join(l))
 
 
-def plate_mapper(input_f, barseq_f, output_f, names_f=None):
+def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
     """ Convert a plate map file into a mapping file
 
     Parameters
@@ -51,13 +51,16 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
         Output mapping file
     names_f : file object (optional)
         Sample name list file
+    special_f : file object (optional)
+        Special sample definition file
     """
+
+    # Read input plate map file
     cols = 0  # number of columns of current plate
     letter = ''  # current row header (a letter)
     primer_plate_id = ''  # primer plate ID
     plates = {}  # plates (primer plate ID : well ID : sample ID)
     properties = {}  # properties
-    # Read input plate map file
     print('Reading input plate map file...')
     for line in input_f:
         l = line.rstrip().split('\t')
@@ -87,6 +90,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
                                             if i < len(l) and l[i]})
     input_f.close()
     print('  Done.')
+
     # Read barcode sequence template file
     barseqs = []
     print('Reading barcode sequence template file...')
@@ -97,20 +101,50 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None):
             barseqs.append(line.split('\t'))
     barseq_f.close()
     print('  Done.')
+
+    # Read special sample definitions
+    specs = {}
+    if special_f:
+        print('Reading special sample definitions...')
+        next(special_f)  # skip header line
+        for line in special_f:
+            line = line.rstrip()
+            l = line.split('\t')
+            if len(l) < 4:
+                raise ValueError('Error: invalid definition: %s.' % line)
+            if l[0] in specs:
+                raise ValueError('Error: Code %s has duplicates.' % repr(l[0]))
+            if not l[1]:
+                raise ValueError('Error: Code %s has no name.' % repr(l[0]))
+            specs[l[0]] = {'name': l[1], 'note': l[2], 'property': l[3:]}
+        special_f.close()
+        print('  Done.')
+
     # Write output sequencing run file
     samples = []
     print('Writing output mapping file...')
-    for x in barseqs:
+    for barcode, primer, plate, well in barseqs:
         # [ barcode sequence, linker primer sequence, primer plate #, well ID ]
-        if x[2] in plates and x[3] in plates[x[2]]:
-            sample = plates[x[2]][x[3]]
-            output_f.write('%s\t%s\t%s\n' % (sample, '\t'.join(x),
-                           '\t'.join(properties[x[2]])))
-            samples.append(sample)
-        else:
-            output_f.write('\t' + '\t'.join(x) + '\n')
+        sample, property = '', []
+        if plate in plates:
+            if well in plates[plate]:
+                sample, property = plates[plate][well], properties[plate]
+                if specs and sample in specs:
+                    # replace with special sample definition
+                    property = specs[sample]['property']
+                    sample = '%s%s.%s' % (specs[sample]['name'], plate, well)
+                else:
+                    # normal sample name
+                    samples.append(sample)
+            elif '' in specs:
+                # empty well (if defined as a special sample)
+                property = specs['']['property']
+                sample = '%s%s.%s' % (specs['']['name'], plate, well)
+        output_f.write('%s\t%s\n' % ('\t'.join((sample, barcode, primer, plate,
+                                     well)), '\t'.join(property)))
     output_f.close()
     print('  Done.')
+
     # Validate sample names
     if names_f:
         print('Validating sample names...')
@@ -165,5 +199,9 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--names', type=argparse.FileType('r'),
                         help='(optional) sample name list file',
                         required=False, default=None)
+    parser.add_argument('-s', '--special', type=argparse.FileType('r'),
+                        help='(optional) special sample definition file',
+                        required=False, default=None)
     args = parser.parse_args()
-    plate_mapper(args.input, args.barseq, args.output, args.names)
+    plate_mapper(args.input, args.barseq, args.output, args.names,
+                 args.special)
