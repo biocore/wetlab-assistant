@@ -58,9 +58,11 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
     # Read input plate map file
     cols = 0  # number of columns of current plate
     letter = ''  # current row header (a letter)
+    plate_id = ''  # plate ID
     primer_plate_id = ''  # primer plate ID
     plates = {}  # plates (primer plate ID : well ID : sample ID)
     properties = {}  # properties
+    primer2plate = {}  # primer plate ID => plate ID
     print('Reading input plate map file...')
     for line in input_f:
         l = line.rstrip().split('\t')
@@ -73,6 +75,10 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
                 elif int(v) != cols+1:
                     raise ValueError('Error: column headers are not '
                                      'incremental integers.')
+            # get plate ID (trailing numeric part)
+            for i in reversed(l[0]):
+                if i.isdigit():
+                    plate_id = '%s%s' % (i, plate_id)
             letter = 'A'
         else:  # plate body
             if letter != l[0]:
@@ -80,6 +86,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
                                  'alphabetical order.')
             if letter == 'A':  # first row
                 primer_plate_id = l[cols+1]
+                primer2plate[primer_plate_id] = plate_id
                 plates[primer_plate_id] = {}
                 # reading properties, which are in the columns after the plate
                 properties[primer_plate_id] = l[cols+2:]
@@ -110,7 +117,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
         for line in special_f:
             line = line.rstrip()
             l = line.split('\t')
-            if len(l) < 4:
+            if len(l) < 3:
                 raise ValueError('Error: invalid definition: %s.' % line)
             if l[0] in specs:
                 raise ValueError('Error: Code %s has duplicates.' % repr(l[0]))
@@ -127,19 +134,22 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
         # [ barcode sequence, linker primer sequence, primer plate #, well ID ]
         sample, property = '', []
         if plate in plates:
+            id = primer2plate[plate]
             if well in plates[plate]:
                 sample, property = plates[plate][well], properties[plate]
                 if specs and sample in specs:
                     # replace with special sample definition
-                    property = specs[sample]['property']
-                    sample = '%s%s.%s' % (specs[sample]['name'], plate, well)
+                    if specs[sample]['property']:
+                        # replace property if available
+                        property = specs[sample]['property']
+                    sample = '%s%s.%s' % (specs[sample]['name'], id, well)
                 else:
                     # normal sample name
                     samples.append(sample)
             elif '' in specs:
                 # empty well (if defined as a special sample)
                 property = specs['']['property']
-                sample = '%s%s.%s' % (specs['']['name'], plate, well)
+                sample = '%s%s.%s' % (specs['']['name'], id, well)
         output_f.write('%s\t%s\n' % ('\t'.join((sample, barcode, primer, plate,
                                      well)), '\t'.join(property)))
     output_f.close()
@@ -187,7 +197,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
 if __name__ == "__main__":
     # Welcome information
     print('Plate Mapper: Convert a plate map file into a mapping file.\n'
-          'Last updated: Jan 4, 2016.')
+          'Last updated: Feb 7, 2017.')
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=argparse.FileType('r'),

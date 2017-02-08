@@ -21,6 +21,7 @@ class PlateMapperTests(TestCase):
     def setUp(self):
         """ Create working directory """
         self.wkdir = mkdtemp()
+        self.maxDiff = None
 
     def tearDown(self):
         """ Delete working directory """
@@ -86,11 +87,11 @@ class PlateMapperTests(TestCase):
         special_fp = join(self.wkdir, 'special_samples_w_error.txt')
         # no property following sample
         with open(special_fp, 'w') as f:
-            f.write('#\n+\tPOS\tpositive control\n')
+            f.write('#\n+\tPOS\t\t\t\n')
         with self.assertRaises(ValueError) as context:
             plate_mapper(open(input_fp, 'r'), open(barseq_fp, 'r'), None,
                          special_f=open(special_fp, 'r'))
-        err = 'Error: invalid definition: +\tPOS\tpositive control.'
+        err = 'Error: invalid definition: +\tPOS.'
         self.assertEqual(str(context.exception), err)
         # code has duplicates
         with open(special_fp, 'w') as f:
