@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 
+import re
 import argparse
 import warnings
 from collections import Counter
@@ -58,9 +59,11 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
     # Read input plate map file
     cols = 0  # number of columns of current plate
     letter = ''  # current row header (a letter)
+    plate_id = ''  # plate ID
     primer_plate_id = ''  # primer plate ID
     plates = {}  # plates (primer plate ID : well ID : sample ID)
-    properties = {}  # properties
+    metadata = {}  # metadata
+    primer2plate = {}  # primer plate ID => plate ID
     print('Reading input plate map file...')
     for line in input_f:
         l = line.rstrip().split('\t')
@@ -73,6 +76,10 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
                 elif int(v) != cols+1:
                     raise ValueError('Error: column headers are not '
                                      'incremental integers.')
+            # get plate ID (trailing numeric part)
+            m = re.search(r'(\d+)$', l[0])
+            if m:
+                plate_id = m.group(1)
             letter = 'A'
         else:  # plate body
             if letter != l[0]:
@@ -80,9 +87,10 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
                                  'alphabetical order.')
             if letter == 'A':  # first row
                 primer_plate_id = l[cols+1]
+                primer2plate[primer_plate_id] = plate_id
                 plates[primer_plate_id] = {}
-                # reading properties, which are in the columns after the plate
-                properties[primer_plate_id] = l[cols+2:]
+                # reading metadata, which are in the columns after the plate
+                metadata[primer_plate_id] = l[cols+2:]
             letter = chr(ord(letter) + 1)
             # only read non-empty cells in column number range
             plates[primer_plate_id].update({'%s%d' % (l[0], i): l[i]
@@ -110,13 +118,15 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
         for line in special_f:
             line = line.rstrip()
             l = line.split('\t')
-            if len(l) < 4:
+            # a valid definition must have code, name and description, while
+            # metadatum is optional
+            if len(l) < 3:
                 raise ValueError('Error: invalid definition: %s.' % line)
             if l[0] in specs:
                 raise ValueError('Error: Code %s has duplicates.' % repr(l[0]))
             if not l[1]:
                 raise ValueError('Error: Code %s has no name.' % repr(l[0]))
-            specs[l[0]] = {'name': l[1], 'note': l[2], 'property': l[3:]}
+            specs[l[0]] = {'name': l[1], 'note': l[2], 'metadatum': l[3:]}
         special_f.close()
         print('  Done.')
 
@@ -125,23 +135,26 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
     print('Writing output mapping file...')
     for barcode, primer, plate, well in barseqs:
         # [ barcode sequence, linker primer sequence, primer plate #, well ID ]
-        sample, property = '', []
+        sample, metadatum = '', []
         if plate in plates:
+            pid = primer2plate[plate]
             if well in plates[plate]:
-                sample, property = plates[plate][well], properties[plate]
+                sample, metadatum = plates[plate][well], metadata[plate]
                 if specs and sample in specs:
                     # replace with special sample definition
-                    property = specs[sample]['property']
-                    sample = '%s%s.%s' % (specs[sample]['name'], plate, well)
+                    if specs[sample]['metadatum']:
+                        # replace metadatum if available
+                        metadatum = specs[sample]['metadatum']
+                    sample = '%s%s.%s' % (specs[sample]['name'], pid, well)
                 else:
                     # normal sample name
                     samples.append(sample)
             elif '' in specs:
                 # empty well (if defined as a special sample)
-                property = specs['']['property']
-                sample = '%s%s.%s' % (specs['']['name'], plate, well)
+                metadatum = specs['']['metadatum']
+                sample = '%s%s.%s' % (specs['']['name'], pid, well)
         output_f.write('%s\t%s\n' % ('\t'.join((sample, barcode, primer, plate,
-                                     well)), '\t'.join(property)))
+                                     well)), '\t'.join(metadatum)))
     output_f.close()
     print('  Done.')
 
@@ -187,7 +200,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
 if __name__ == "__main__":
     # Welcome information
     print('Plate Mapper: Convert a plate map file into a mapping file.\n'
-          'Last updated: Jan 4, 2016.')
+          'Last updated: Feb 7, 2017.')
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=argparse.FileType('r'),
