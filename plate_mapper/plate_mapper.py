@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 
+import re
 import argparse
 import warnings
 from collections import Counter
@@ -76,9 +77,9 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
                     raise ValueError('Error: column headers are not '
                                      'incremental integers.')
             # get plate ID (trailing numeric part)
-            for i in reversed(l[0]):
-                if i.isdigit():
-                    plate_id = '%s%s' % (i, plate_id)
+            m = re.search(r'(\d+)$', l[0])
+            if m:
+                plate_id = m.group(1)
             letter = 'A'
         else:  # plate body
             if letter != l[0]:
