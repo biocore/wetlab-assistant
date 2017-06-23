@@ -16,19 +16,19 @@ from plate_mapper.plate_mapper import (plate_mapper,
 
 
 class PlateMapperTests(TestCase):
-    """ Tests for plate_mapper.py """
+    """Tests for plate_mapper.py."""
 
     def setUp(self):
-        """ Create working directory """
+        """Create working directory."""
         self.wkdir = mkdtemp()
         self.maxDiff = None
 
     def tearDown(self):
-        """ Delete working directory """
+        """Delete working directory."""
         rmtree(self.wkdir)
 
     def test_plate_mapper(self):
-
+        """Test plate_mapper."""
         # test a successful conversion
         # subdirectory "data", in which test data files are located
         datadir = join(dirname(realpath(__file__)), 'data')
@@ -42,7 +42,7 @@ class PlateMapperTests(TestCase):
         output_f = open(obs_output_fp, 'w')
         # expected output mapping file
         exp_output_fp = join(datadir, 'exp_mapping.txt')
-        plate_mapper(input_f, barseq_f, output_f)
+        plate_mapper(input_f, barseq_f, output_f, empty=True)
         # check output mapping file
         with open(obs_output_fp, 'r') as f:
             obs = f.read()
@@ -127,6 +127,7 @@ class PlateMapperTests(TestCase):
             assert msg in str(w[-1].message)
 
     def test__print_list(self):
+        """Test _print_list."""
         l = ['1', '2', '3', '4', '5']
         obs = _print_list(l)
         exp = '1, 2, 3, 4, 5'
