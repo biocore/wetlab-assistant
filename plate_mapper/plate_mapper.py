@@ -14,7 +14,7 @@ from collections import Counter
 
 
 def _print_list(l):
-    """ Print a list of strings in a human-friendly way
+    """Print a list of strings in a human-friendly way.
 
     Parameter
     ---------
@@ -39,8 +39,9 @@ def _print_list(l):
         return(', '.join(l))
 
 
-def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
-    """ Convert a plate map file into a mapping file
+def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None,
+                 empty=False):
+    """Convert a plate map file into a mapping file.
 
     Parameters
     ----------
@@ -54,8 +55,9 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
         Sample name list file
     special_f : file object (optional)
         Special sample definition file
+    empty : bool (optional)
+        Whether to keep empty lines in mapping file (default: false)
     """
-
     # Read input plate map file
     cols = 0  # number of columns of current plate
     letter = ''  # current row header (a letter)
@@ -153,8 +155,12 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
                 # empty well (if defined as a special sample)
                 metadatum = specs['']['metadatum']
                 sample = '%s%s.%s' % (specs['']['name'], pid, well)
-        output_f.write('%s\t%s\n' % ('\t'.join((sample, barcode, primer, plate,
-                                     well)), '\t'.join(metadatum)))
+        if sample or empty:
+            # replace underscore and dash with dot in sample name
+            sample_dot = sample.replace('_', '.').replace('-', '.')
+            output_f.write('%s\t%s\n' % (
+                '\t'.join((sample_dot, barcode, primer, plate, well)),
+                '\t'.join(metadatum)))
     output_f.close()
     print('  Done.')
 
@@ -200,7 +206,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None):
 if __name__ == "__main__":
     # Welcome information
     print('Plate Mapper: Convert a plate map file into a mapping file.\n'
-          'Last updated: Feb 7, 2017.')
+          'Last updated: Jun 22, 2017.')
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', type=argparse.FileType('r'),
@@ -215,6 +221,8 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--special', type=argparse.FileType('r'),
                         help='(optional) special sample definition file',
                         required=False, default=None)
+    parser.add_argument('-e', '--empty', action='store_true',
+                        help='keep empty lines in mapping file')
     args = parser.parse_args()
     plate_mapper(args.input, args.barseq, args.output, args.names,
-                 args.special)
+                 args.special, args.empty)
