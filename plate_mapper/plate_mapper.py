@@ -55,8 +55,8 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None,
         Sample name list file
     special_f : file object (optional)
         Special sample definition file
-    empty : bool
-        Whether to keep empty lines in mapping file
+    empty : bool (optional)
+        Whether to keep empty lines in mapping file (default: false)
     """
     # Read input plate map file
     cols = 0  # number of columns of current plate
