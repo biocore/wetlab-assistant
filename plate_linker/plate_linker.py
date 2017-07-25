@@ -21,12 +21,27 @@ def plate_linker(metadata_f, primer_f, output_f):
         Input primer file
     output_f : file object
         Output mapping file
+
+    Notes
+    -----
+    This function joins a metadata file and a primer file (barcode sequence
+    template file) by well, into a complete mapping file.
+
+    In the metadata file, the 1st column is the sample ID, the 2nd and 3rd
+    columns are primer plate ID and well ID, and the remaining columns are
+    metadata to be appended.
+
+    In the primer file, the 2nd and 3rd columns are barcode and primer, while
+    the 4th and 5th columns are primer plate ID and well ID.
+
+    In the output file, columns are: sample ID, barcode, primer, primer plate
+    ID, well ID, plus variable number of metadata columns.
     """
     # merge column headers of primer and metadata files
     primcols = primer_f.readline().strip('\r\n').split('\t')
     metacols = metadata_f.readline().strip('\r\n').split('\t')[3:]
     output_f.write('%s\n' % '\t'.join(primcols + metacols))
-    # read sample ID and metadata associated with well ID
+    # read sample ID and metadata associated with well
     well2sample, well2meta = {}, {}
     for line in metadata_f:
         l = line.rstrip('\r\n').split('\t')
@@ -34,7 +49,7 @@ def plate_linker(metadata_f, primer_f, output_f):
         well = '%s.%s' % (l[1], l[2])
         well2sample[well] = sample
         well2meta[well] = l[3:]
-    # read primer by well ID and append sample ID and metadata
+    # read primer by well and append sample ID and metadata
     for line in primer_f:
         l = line.rstrip('\r\n').split('\t')
         well = '%s.%s' % (l[3], l[4])
