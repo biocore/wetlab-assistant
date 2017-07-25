@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 
 
+import re
 import argparse
 
 
@@ -38,25 +39,46 @@ def plate_linker(metadata_f, primer_f, output_f):
     ID, well ID, plus variable number of metadata columns.
     """
     # merge column headers of primer and metadata files
+    metacols = metadata_f.readline().strip('\r\n').split('\t')
+    if len(metacols) < 3:
+        raise ValueError('Error: metadata table must have at least three '
+                         'columns.')
     primcols = primer_f.readline().strip('\r\n').split('\t')
-    metacols = metadata_f.readline().strip('\r\n').split('\t')[3:]
-    output_f.write('%s\n' % '\t'.join(primcols + metacols))
+    if len(primcols) != 5:
+        raise ValueError('Error: primer table must have exactly five columns.')
+    output_f.write('%s\n' % '\t'.join(primcols + metacols[3:]))
     # read sample ID and metadata associated with well
+    p = re.compile(r'^\d+\.[A-Z]\d+$')  # well must read like 1.A2
     well2sample, well2meta = {}, {}
     for line in metadata_f:
         l = line.rstrip('\r\n').split('\t')
         sample = l[0].replace('_', '.').replace('-', '.')
         well = '%s.%s' % (l[1], l[2])
+        if not p.search(well):
+            raise ValueError('Error: invalid well identifier: %s.' % well)
         well2sample[well] = sample
         well2meta[well] = l[3:]
+    metadata_f.close()
     # read primer by well and append sample ID and metadata
+    all_wells = set(well2sample.keys())
+    used_wells = set()
     for line in primer_f:
         l = line.rstrip('\r\n').split('\t')
         well = '%s.%s' % (l[3], l[4])
-        if well in well2sample:
+        if not p.search(well):
+            raise ValueError('Error: invalid well identifier: %s.' % well)
+        if well in all_wells:
             l[0] = well2sample[well]
             l += well2meta[well]
             output_f.write('%s\n' % '\t'.join(l))
+            used_wells.add(well)
+    primer_f.close()
+    # check if all samples are included
+    if all_wells > used_wells:
+        missing = sorted([well2sample[x] for x in (all_wells - used_wells)])
+        raise ValueError('Error: the following samples do not have matched '
+                         'primers: %s.' % ', '.join(missing))
+    output_f.close()
     print('Task completed.')
 
 
