@@ -167,7 +167,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None,
     # Check for repeated sample names
     warning = ''
     samples = Counter(samples)
-    repeated = [sample for sample, count in samples.items() if count > 1]
+    repeated = [name for name, count in samples.items() if count > 1]
     if repeated:
         warning += ('  Repeated samples: %s.\n'
                     % _print_list(sorted(repeated)))
