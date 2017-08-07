@@ -164,43 +164,43 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None,
     output_f.close()
     print('  Done.')
 
+    # Check for repeated sample names
+    warning = ''
+    samples = Counter(samples)
+    repeated = [sample for sample, count in samples.items() if count > 1]
+    if repeated:
+        warning += ('  Repeated samples: %s.\n'
+                    % _print_list(sorted(repeated)))
+
     # Validate sample names
     if names_f:
         print('Validating sample names...')
-        samples = Counter(samples)
         names = set()
         for line in names_f:
             l = line.rstrip().split('\t')
             if l[0]:  # skip empty names
                 names.add(l[0])  # keep first field as name
         names_f.close()
-        warning = ''
         if names:
             sample_set = set(samples)
             # samples in plate map but not in name list
             novel = sample_set - names
             # samples in name list but not in plate map
             missing = names - sample_set
-            # samples that occur more than one times in plate map
-            repeated = set()
-            for name in names:
-                if name in samples and samples[name] > 1:
-                    repeated.add(name)
             if novel:
                 warning += ('  Novel samples: %s.\n'
                             % _print_list(sorted(novel)))
             if missing:
                 warning += ('  Missing samples: %s.\n'
                             % _print_list(sorted(missing)))
-            if repeated:
-                warning += ('  Repeated samples: %s.\n'
-                            % _print_list(sorted(repeated)))
         print('  Done.')
-        if warning:
-            # display warning message
-            warnings.formatwarning = lambda msg, *a: str(msg)
-            warnings.warn('Warning:\n%s' % warning)
-        print('Task completed.')
+
+    # Display warning message
+    if warning:
+        warnings.formatwarning = lambda msg, *a: str(msg)
+        warnings.warn('Warning:\n%s' % warning)
+
+    print('Task completed.')
 
 
 if __name__ == "__main__":
