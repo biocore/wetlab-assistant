@@ -111,12 +111,12 @@ class PlateMapperTests(TestCase):
         self.assertEqual(str(context.exception), err)
 
         # test a successful conversion with repeated sample name warning
-        input_f = open(join(datadir, 'plate_map.txt'), 'r')
+        input_f = open(join(datadir, 'plate_map_w_dup.txt'), 'r')
         barseq_f = open(join(datadir, 'barseq_temp.txt'), 'r')
         output_f = open(obs_output_fp, 'w')
         # check screen warning message
         msg = ('Warning:\n'
-               '  Repeated samples: blank4A.\n')
+               '  Repeated samples: sp001.\n')
         with catch_warnings(record=True) as w:
             simplefilter('always')
             plate_mapper(input_f, barseq_f, output_f)
@@ -130,7 +130,6 @@ class PlateMapperTests(TestCase):
         names_f = open(join(datadir, 'sample_list.txt'), 'r')
         # check screen warning message
         msg = ('Warning:\n'
-               '  Repeated samples: blank4A.\n'
                '  Novel samples: missing4B, sp220.\n'
                '  Missing samples: sp014, sp017.\n')
         with catch_warnings(record=True) as w:
