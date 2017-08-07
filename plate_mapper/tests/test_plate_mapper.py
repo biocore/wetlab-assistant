@@ -110,6 +110,18 @@ class PlateMapperTests(TestCase):
         err = 'Error: Code \'+\' has no name.'
         self.assertEqual(str(context.exception), err)
 
+        # test a successful conversion with repeated sample name warning
+        input_f = open(join(datadir, 'plate_map_w_dup.txt'), 'r')
+        barseq_f = open(join(datadir, 'barseq_temp.txt'), 'r')
+        output_f = open(obs_output_fp, 'w')
+        # check screen warning message
+        msg = ('Warning:\n'
+               '  Repeated samples: sp001.\n')
+        with catch_warnings(record=True) as w:
+            simplefilter('always')
+            plate_mapper(input_f, barseq_f, output_f)
+            assert msg in str(w[-1].message)
+
         # test a successful conversion with sample name validation warnings
         input_f = open(join(datadir, 'plate_map.txt'), 'r')
         barseq_f = open(join(datadir, 'barseq_temp.txt'), 'r')
@@ -119,8 +131,7 @@ class PlateMapperTests(TestCase):
         # check screen warning message
         msg = ('Warning:\n'
                '  Novel samples: missing4B, sp220.\n'
-               '  Missing samples: sp014, sp017.\n'
-               '  Repeated samples: blank4A.\n')
+               '  Missing samples: sp014, sp017.\n')
         with catch_warnings(record=True) as w:
             simplefilter('always')
             plate_mapper(input_f, barseq_f, output_f, names_f)
