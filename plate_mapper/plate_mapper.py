@@ -197,7 +197,7 @@ def plate_mapper(input_f, barseq_f, output_f, names_f=None, special_f=None,
 
     # Display warning message
     if warning:
-        warnings.formatwarning = lambda msg, *a: str(msg)
+        warnings.formatwarning = lambda msg, cat, fname, lineno, line: str(msg)
         warnings.warn('Warning:\n%s' % warning)
 
     print('Task completed.')
